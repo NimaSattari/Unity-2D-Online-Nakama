@@ -1,4 +1,6 @@
 using Nakama;
+using RTLTMPro;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,10 +25,13 @@ public class TicTacNakamaConnection : MonoBehaviour
     [SerializeField] GameObject ticTacCanvas;
     [SerializeField] DoTweenActions playerSelectingPanel;
     [SerializeField] DoTweenActions findingPanel;
+    [SerializeField] GameObject chatPanel;
+    [SerializeField] Text chatTextPrefab;
+    [SerializeField] TMP_InputField chatInputfield;
     [SerializeField] TicTacController controller;
 
 
-    async void Start()
+    public async void Start()
     {
         client = new Client(scheme, host, port, serverKey, UnityWebRequestAdapter.Instance);
         session = await client.AuthenticateDeviceAsync(SystemInfo.deviceUniqueIdentifier);
@@ -47,11 +52,12 @@ public class TicTacNakamaConnection : MonoBehaviour
         findingPanel.DoAnimation();
     }
 
-    private async void OnReceivedMatchmakerMatched(IMatchmakerMatched matchmakerMatched)
+    public async void OnReceivedMatchmakerMatched(IMatchmakerMatched matchmakerMatched)
     {
         match = await socket.JoinMatchAsync(matchmakerMatched);
         matchId = match.Id;
         playerSelectingPanel.gameObject.SetActive(true);
+        chatPanel.SetActive(true);
         playerSelectingPanel.DoAnimation();
         findingPanel.gameObject.SetActive(false);
         Debug.Log("Our Session ID" + match.Self.SessionId);
@@ -66,6 +72,7 @@ public class TicTacNakamaConnection : MonoBehaviour
         await socket.LeaveMatchAsync(matchId);
         playerSelectingPanel.gameObject.SetActive(false);
         ticTacCanvas.gameObject.SetActive(false);
+        chatPanel.SetActive(false);
         player = null;
         playerText.text = player;
         Ping(9);
@@ -112,7 +119,7 @@ public class TicTacNakamaConnection : MonoBehaviour
         }
     }
 
-    private void OnReceivedMatchState(IMatchState matchState)
+    public void OnReceivedMatchState(IMatchState matchState)
     {
         if(0 <= matchState.OpCode && matchState.OpCode <= 8)
         {
@@ -126,6 +133,13 @@ public class TicTacNakamaConnection : MonoBehaviour
         {
             controller.NakamaRestartGame();
         }
+        else if(matchState.OpCode == 11)
+        {
+            var enc = System.Text.Encoding.UTF8;
+            var content = enc.GetString(matchState.State);
+            Text chatTextInstance = Instantiate(chatTextPrefab, chatPanel.transform);
+            chatTextInstance.text = content;
+        }
     }
 
     public void SetPlayer(string newPlayer)
@@ -136,5 +150,17 @@ public class TicTacNakamaConnection : MonoBehaviour
         ticTacCanvas.gameObject.SetActive(true);
         controller.SetStartingSide("X");
         controller.SetGameControllerReferenceOnButtons();
+    }
+
+    public void OnEndEditChat()
+    {
+        Text chatTextInstance = Instantiate(chatTextPrefab, chatPanel.transform);
+        chatTextInstance.text = chatInputfield.text;
+        ChatPing(chatInputfield.text);
+        chatInputfield.text = "";
+    }
+    public async void ChatPing(string chatText)
+    {
+        await socket.SendMatchStateAsync(matchId, 11, chatText, null);
     }
 }
