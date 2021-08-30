@@ -3,8 +3,9 @@ using UnityEngine;
 public class TicTacController : MonoBehaviour
 {
     [SerializeField] TicTacView view;
-    TicTacModel model;
     [SerializeField] TicTacNakamaConnection connection;
+
+    TicTacModel model;
 
     private void Awake()
     {

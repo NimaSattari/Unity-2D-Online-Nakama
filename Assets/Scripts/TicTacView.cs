@@ -19,10 +19,9 @@ public class PlayerColor
 
 public class TicTacView : MonoBehaviour
 {
-
     public GridSpaceButton[] buttonList;
     public GameObject gameOverPanel;
-    public RTLTextMeshPro gameOverText;
+    public Text gameOverText;
     public GameObject restartButton;
     public Player playerX;
     public Player playerO;

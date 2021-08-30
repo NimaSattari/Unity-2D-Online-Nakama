@@ -1,5 +1,4 @@
 using Nakama;
-using RTLTMPro;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,14 +19,19 @@ public class TicTacNakamaConnection : MonoBehaviour
     public string matchId;
 
     [SerializeField] GridSpaceButton[] gridSpaceButtons;
+
     [SerializeField] public string player;
+
     [SerializeField] Text playerText;
-    [SerializeField] GameObject ticTacCanvas;
-    [SerializeField] DoTweenActions playerSelectingPanel;
-    [SerializeField] DoTweenActions findingPanel;
-    [SerializeField] GameObject chatPanel;
     [SerializeField] Text chatTextPrefab;
     [SerializeField] TMP_InputField chatInputfield;
+
+    [SerializeField] GameObject ticTacCanvas;
+    [SerializeField] GameObject chatPanel;
+
+    [SerializeField] DoTweenActions playerSelectingPanel;
+    [SerializeField] DoTweenActions findingPanel;
+
     [SerializeField] TicTacController controller;
 
 
@@ -45,19 +49,22 @@ public class TicTacNakamaConnection : MonoBehaviour
 
     public async void FindMatch()
     {
+        print("FindMatch Start");
         Debug.Log("Finding Match");
         var matchMakingTicket = await socket.AddMatchmakerAsync("*", 2, 2);
         ticket = matchMakingTicket.Ticket;
         findingPanel.gameObject.SetActive(true);
         findingPanel.DoAnimation();
+        print("FindMatch End");
     }
 
     public async void OnReceivedMatchmakerMatched(IMatchmakerMatched matchmakerMatched)
     {
+        print("OnReceivedMatchmakerMatched Start");
         match = await socket.JoinMatchAsync(matchmakerMatched);
         matchId = match.Id;
         playerSelectingPanel.gameObject.SetActive(true);
-        chatPanel.SetActive(true);
+        //chatPanel.SetActive(true);
         playerSelectingPanel.DoAnimation();
         findingPanel.gameObject.SetActive(false);
         Debug.Log("Our Session ID" + match.Self.SessionId);
@@ -65,17 +72,18 @@ public class TicTacNakamaConnection : MonoBehaviour
         {
             Debug.Log("Connected USER session ID" + user.SessionId);
         }
+        print("OnReceivedMatchmakerMatched End");
     }
 
     public async void LeaveMatch()
     {
+        Ping(9);
         await socket.LeaveMatchAsync(matchId);
         playerSelectingPanel.gameObject.SetActive(false);
         ticTacCanvas.gameObject.SetActive(false);
         chatPanel.SetActive(false);
-        player = null;
+        player = "";
         playerText.text = player;
-        Ping(9);
     }
 
 
@@ -144,12 +152,14 @@ public class TicTacNakamaConnection : MonoBehaviour
 
     public void SetPlayer(string newPlayer)
     {
+        print("SetPlayer Start");
         player = newPlayer;
         playerText.text = player;
         playerSelectingPanel.gameObject.SetActive(false);
         ticTacCanvas.gameObject.SetActive(true);
         controller.SetStartingSide("X");
         controller.SetGameControllerReferenceOnButtons();
+        print("SetPlayer End");
     }
 
     public void OnEndEditChat()

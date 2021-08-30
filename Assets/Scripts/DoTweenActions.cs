@@ -1,6 +1,4 @@
 using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class DoTweenActions : MonoBehaviour
@@ -23,6 +21,7 @@ public class DoTweenActions : MonoBehaviour
 
     public void DoAnimation()
     {
+        print("DoAnimationStart");
         if (animationType == AnimationType.Move)
         {
             transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase);
@@ -47,5 +46,6 @@ public class DoTweenActions : MonoBehaviour
                 .Append(transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase))
                 .Join(transform.DORotate(targetRotation, animationDuration).SetEase(animationEase));
         }
+        print("DoAnimationEnd");
     }
 }
