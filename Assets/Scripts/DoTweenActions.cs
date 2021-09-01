@@ -21,31 +21,30 @@ public class DoTweenActions : MonoBehaviour
 
     public void DoAnimation()
     {
-        print("DoAnimationStart");
+        DOTween.RewindAll();
         if (animationType == AnimationType.Move)
         {
-            transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase);
+            transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase).SetAutoKill(false).SetRecyclable(true);
         }
         else if (animationType == AnimationType.Rotate)
         {
-            transform.DORotate(targetRotation, animationDuration).SetEase(animationEase);
+            transform.DORotate(targetRotation, animationDuration).SetEase(animationEase).SetAutoKill(false).SetRecyclable(true);
         }
         else if (animationType == AnimationType.Scale)
         {
-            transform.DOScale(targetSize, animationDuration).SetEase(animationEase);
+            transform.DOScale(targetSize, animationDuration).SetEase(animationEase).SetAutoKill(false).SetRecyclable(true);
         }
         else if (animationType == AnimationType.MoveAndScale)
         {
-            DOTween.Sequence().SetAutoKill(false)
+            DOTween.Sequence().SetAutoKill(false).SetRecyclable(true)
                 .Append(transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase))
                 .Join(transform.DOScale(targetSize, animationDuration).SetEase(animationEase));
         }
         else if (animationType == AnimationType.MoveAndRotate)
         {
-            DOTween.Sequence().SetAutoKill(false)
+            DOTween.Sequence().SetAutoKill(false).SetRecyclable(true)
                 .Append(transform.DOLocalMove(targetLocation, animationDuration).SetEase(animationEase))
                 .Join(transform.DORotate(targetRotation, animationDuration).SetEase(animationEase));
         }
-        print("DoAnimationEnd");
     }
 }

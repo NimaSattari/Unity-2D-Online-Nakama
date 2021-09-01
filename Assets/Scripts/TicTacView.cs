@@ -67,12 +67,12 @@ public class TicTacView : MonoBehaviour
         SetBoardInteractable(false);
         if (winningPlayer == "draw")
         {
-            SetGameOverText("مساوی شد");
+            SetGameOverText("It's A Draw");
             SetPlayerColorsInactive();
         }
         else
         {
-            SetGameOverText(winningPlayer + " برنده شد ");
+            SetGameOverText(winningPlayer + " Wins!!!");
         }
         restartButton.SetActive(true);
     }
